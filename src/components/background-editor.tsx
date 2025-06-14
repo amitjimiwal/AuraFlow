@@ -262,7 +262,7 @@ export function BackgroundEditor({
                       checked={backgroundType === "image"}
                       onChange={() => {
                         setBackgroundType("image");
-                        setText("competition is for loosers");
+                        setText("competition is for losers");
                       }}
                       className="h-4 w-4 border-slate-600 bg-slate-700/50 text-blue-400 transition-colors focus:ring-blue-400"
                     />
