@@ -3,11 +3,12 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --main-bg: rgb(16 16 19 / 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--main-bg);
+  --color-foreground: var(--main-bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -20,7 +21,7 @@
 }
 
 body {
-  background: var(--background);
+  background: rgb(16 16 19 / 1);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
