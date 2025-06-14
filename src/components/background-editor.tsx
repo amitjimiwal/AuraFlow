@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
-import { Download } from "lucide-react";
+import { Download, Upload, X } from "lucide-react";
 import * as Slider from "@radix-ui/react-slider";
 import Link from "next/link";
 
@@ -12,6 +12,9 @@ interface BackgroundEditorProps {
 export function BackgroundEditor({
   defaultText = "everything is god's plan",
 }: BackgroundEditorProps) {
+  const [backgroundType, setBackgroundType] = useState<"gradient" | "image">(
+    "gradient"
+  );
   const [text, setText] = useState(defaultText);
   const [textColor, setTextColor] = useState("#ffffff");
   const [textOpacity, setTextOpacity] = useState(100);
@@ -24,7 +27,53 @@ export function BackgroundEditor({
   });
   const [useBackgroundGradient, setUseBackgroundGradient] = useState(true);
 
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(
+    "./peter.png"
+  );
+  const [imagePosition, setImagePosition] = useState({ x: 75, y: 35 }); // percentage
+  const [imageScale, setImageScale] = useState(61); // percentage
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const backgroundRef = useRef<HTMLDivElement>(null);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setBackgroundImage(e.target?.result as string);
+        setBackgroundType("image");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setBackgroundImage(null);
+    setBackgroundType("gradient");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const backgroundStyle =
+    backgroundType === "gradient"
+      ? useBackgroundGradient
+        ? {
+            backgroundImage: `linear-gradient(${backgroundGradientAngle}deg, ${customBackgroundGradient.from}, ${customBackgroundGradient.via}, ${customBackgroundGradient.to})`,
+            backgroundSize: "cover",
+          }
+        : {
+            backgroundColor: backgroundColor,
+          }
+      : backgroundImage
+      ? {
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundPosition: `${imagePosition.x}% ${imagePosition.y}%`,
+          backgroundSize: `${imageScale}%`,
+          backgroundColor: backgroundColor,
+        }
+      : {};
 
   const handleDownload = async () => {
     if (!backgroundRef.current) return;
@@ -44,15 +93,6 @@ export function BackgroundEditor({
     }
   };
 
-  const backgroundGradientStyle = useBackgroundGradient
-    ? {
-        backgroundImage: `linear-gradient(${backgroundGradientAngle}deg, ${customBackgroundGradient.from}, ${customBackgroundGradient.via}, ${customBackgroundGradient.to})`,
-        backgroundSize: "cover",
-      }
-    : {
-        backgroundColor: backgroundColor,
-      };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
       <div className="mx-auto max-w-6xl">
@@ -67,18 +107,6 @@ export function BackgroundEditor({
             </p>
           </div>
           <div className="flex items-center gap-4">
-            {/* <Link
-              href={"https://x.com/notamitwts"}
-              target="_blank"
-              referrerPolicy="no-referrer"
-              className="group flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2.5 text-slate-300 shadow-lg ring-1 ring-white/10 transition-all hover:bg-slate-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
-            >
-              <Twitter
-                size={18}
-                className="transition-transform group-hover:-translate-y-0.5"
-              />
-              Follow
-            </Link> */}
             <p>
               <small className="text-xs text-slate-400">
                 X &nbsp;
@@ -111,8 +139,21 @@ export function BackgroundEditor({
               <div
                 ref={backgroundRef}
                 className="flex h-full w-full items-center justify-center p-8 transition-all duration-300"
-                style={backgroundGradientStyle}
+                style={{
+                  ...backgroundStyle,
+                  position: "relative",
+                }}
               >
+                {backgroundType === "image" && backgroundImage && (
+                  <div
+                    className="absolute inset-0 transition-opacity duration-300"
+                    style={{
+                      backgroundImage: `url(${backgroundImage})`,
+                      backgroundPosition: `${imagePosition.x}% ${imagePosition.y}%`,
+                      backgroundSize: `${imageScale}%`,
+                    }}
+                  />
+                )}
                 <div className="relative">
                   <p
                     className="text-center leading-relaxed text-4xl font-medium tracking-wide transition-all duration-300"
@@ -203,153 +244,299 @@ export function BackgroundEditor({
                 <h2 className="text-xl font-semibold text-white">Background</h2>
               </div>
               <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="useBackgroundGradient"
-                    checked={useBackgroundGradient}
-                    onChange={(e) => setUseBackgroundGradient(e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-600 bg-slate-700/50 text-blue-400 transition-colors focus:ring-blue-400"
-                  />
-                  <label
-                    htmlFor="useBackgroundGradient"
-                    className="text-sm font-medium text-slate-300"
-                  >
-                    Use Gradient
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={backgroundType === "gradient"}
+                      onChange={() => setBackgroundType("gradient")}
+                      className="h-4 w-4 border-slate-600 bg-slate-700/50 text-blue-400 transition-colors focus:ring-blue-400"
+                    />
+                    <span className="text-sm font-medium text-slate-300">
+                      Gradient
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      checked={backgroundType === "image"}
+                      onChange={() => {
+                        setBackgroundType("image");
+                        setText("competition is for loosers");
+                      }}
+                      className="h-4 w-4 border-slate-600 bg-slate-700/50 text-blue-400 transition-colors focus:ring-blue-400"
+                    />
+                    <span className="text-sm font-medium text-slate-300">
+                      Image
+                    </span>
                   </label>
                 </div>
 
-                {useBackgroundGradient ? (
+                {backgroundType === "gradient" ? (
                   <>
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-slate-300">
-                        Gradient Colors
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="useBackgroundGradient"
+                        checked={useBackgroundGradient}
+                        onChange={(e) =>
+                          setUseBackgroundGradient(e.target.checked)
+                        }
+                        className="h-4 w-4 rounded border-slate-600 bg-slate-700/50 text-blue-400 transition-colors focus:ring-blue-400"
+                      />
+                      <label
+                        htmlFor="useBackgroundGradient"
+                        className="text-sm font-medium text-slate-300"
+                      >
+                        Use Gradient
                       </label>
-                      <div className="grid gap-4">
-                        <div className="flex items-center gap-4">
-                          <input
-                            type="color"
-                            value={customBackgroundGradient.from}
-                            onChange={(e) =>
-                              setCustomBackgroundGradient((prev) => ({
-                                ...prev,
-                                from: e.target.value,
-                              }))
-                            }
-                            className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                          />
-                          <input
-                            type="text"
-                            value={customBackgroundGradient.from}
-                            onChange={(e) =>
-                              setCustomBackgroundGradient((prev) => ({
-                                ...prev,
-                                from: e.target.value,
-                              }))
-                            }
-                            className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                          />
-                          <span className="text-sm text-slate-400">From</span>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <input
-                            type="color"
-                            value={customBackgroundGradient.via}
-                            onChange={(e) =>
-                              setCustomBackgroundGradient((prev) => ({
-                                ...prev,
-                                via: e.target.value,
-                              }))
-                            }
-                            className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                          />
-                          <input
-                            type="text"
-                            value={customBackgroundGradient.via}
-                            onChange={(e) =>
-                              setCustomBackgroundGradient((prev) => ({
-                                ...prev,
-                                via: e.target.value,
-                              }))
-                            }
-                            className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                          />
-                          <span className="text-sm text-slate-400">Via</span>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <input
-                            type="color"
-                            value={customBackgroundGradient.to}
-                            onChange={(e) =>
-                              setCustomBackgroundGradient((prev) => ({
-                                ...prev,
-                                to: e.target.value,
-                              }))
-                            }
-                            className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                          />
-                          <input
-                            type="text"
-                            value={customBackgroundGradient.to}
-                            onChange={(e) =>
-                              setCustomBackgroundGradient((prev) => ({
-                                ...prev,
-                                to: e.target.value,
-                              }))
-                            }
-                            className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                          />
-                          <span className="text-sm text-slate-400">To</span>
-                        </div>
-                      </div>
                     </div>
 
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-slate-300">
-                        Gradient Angle
-                      </label>
-                      <div className="flex items-center gap-4">
-                        <Slider.Root
-                          className="relative flex h-5 w-full touch-none select-none items-center"
-                          value={[backgroundGradientAngle]}
-                          onValueChange={([value]) =>
-                            setBackgroundGradientAngle(value)
-                          }
-                          max={360}
-                          step={1}
-                        >
-                          <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-700">
-                            <Slider.Range className="absolute h-full bg-gradient-to-r from-blue-400 to-teal-400" />
-                          </Slider.Track>
-                          <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
-                        </Slider.Root>
-                        <span className="w-12 text-right text-sm text-slate-400">
-                          {backgroundGradientAngle}°
-                        </span>
+                    {useBackgroundGradient ? (
+                      <>
+                        <div>
+                          <label className="mb-2 block text-sm font-medium text-slate-300">
+                            Gradient Colors
+                          </label>
+                          <div className="grid gap-4">
+                            <div className="flex items-center gap-4">
+                              <input
+                                type="color"
+                                value={customBackgroundGradient.from}
+                                onChange={(e) =>
+                                  setCustomBackgroundGradient((prev) => ({
+                                    ...prev,
+                                    from: e.target.value,
+                                  }))
+                                }
+                                className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                              />
+                              <input
+                                type="text"
+                                value={customBackgroundGradient.from}
+                                onChange={(e) =>
+                                  setCustomBackgroundGradient((prev) => ({
+                                    ...prev,
+                                    from: e.target.value,
+                                  }))
+                                }
+                                className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                              />
+                              <span className="text-sm text-slate-400">
+                                From
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                              <input
+                                type="color"
+                                value={customBackgroundGradient.via}
+                                onChange={(e) =>
+                                  setCustomBackgroundGradient((prev) => ({
+                                    ...prev,
+                                    via: e.target.value,
+                                  }))
+                                }
+                                className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                              />
+                              <input
+                                type="text"
+                                value={customBackgroundGradient.via}
+                                onChange={(e) =>
+                                  setCustomBackgroundGradient((prev) => ({
+                                    ...prev,
+                                    via: e.target.value,
+                                  }))
+                                }
+                                className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                              />
+                              <span className="text-sm text-slate-400">
+                                Via
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                              <input
+                                type="color"
+                                value={customBackgroundGradient.to}
+                                onChange={(e) =>
+                                  setCustomBackgroundGradient((prev) => ({
+                                    ...prev,
+                                    to: e.target.value,
+                                  }))
+                                }
+                                className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                              />
+                              <input
+                                type="text"
+                                value={customBackgroundGradient.to}
+                                onChange={(e) =>
+                                  setCustomBackgroundGradient((prev) => ({
+                                    ...prev,
+                                    to: e.target.value,
+                                  }))
+                                }
+                                className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                              />
+                              <span className="text-sm text-slate-400">To</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="mb-2 block text-sm font-medium text-slate-300">
+                            Gradient Angle
+                          </label>
+                          <div className="flex items-center gap-4">
+                            <Slider.Root
+                              className="relative flex h-5 w-full touch-none select-none items-center"
+                              value={[backgroundGradientAngle]}
+                              onValueChange={([value]) =>
+                                setBackgroundGradientAngle(value)
+                              }
+                              max={360}
+                              step={1}
+                            >
+                              <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-700">
+                                <Slider.Range className="absolute h-full bg-gradient-to-r from-blue-400 to-teal-400" />
+                              </Slider.Track>
+                              <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
+                            </Slider.Root>
+                            <span className="w-12 text-right text-sm text-slate-400">
+                              {backgroundGradientAngle}°
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div>
+                        <label className="mb-2 block text-sm font-medium text-slate-300">
+                          Background Color
+                        </label>
+                        <div className="flex items-center gap-4">
+                          <input
+                            type="color"
+                            value={backgroundColor}
+                            onChange={(e) => setBackgroundColor(e.target.value)}
+                            className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                          />
+                          <input
+                            type="text"
+                            value={backgroundColor}
+                            onChange={(e) => setBackgroundColor(e.target.value)}
+                            className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                          />
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </>
                 ) : (
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-300">
-                      Background Color
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <input
-                        type="color"
-                        value={backgroundColor}
-                        onChange={(e) => setBackgroundColor(e.target.value)}
-                        className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                      />
-                      <input
-                        type="text"
-                        value={backgroundColor}
-                        onChange={(e) => setBackgroundColor(e.target.value)}
-                        className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                      />
+                  <div className="space-y-6">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-300">
+                        Background Image
+                      </label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-slate-300 transition-colors hover:bg-slate-600 hover:text-white"
+                        >
+                          <Upload size={18} />
+                          Upload Image
+                        </button>
+                        {backgroundImage && (
+                          <button
+                            onClick={handleRemoveImage}
+                            className="flex items-center gap-2 rounded-lg bg-red-500/10 px-4 py-2 text-red-400 transition-colors hover:bg-red-500/20"
+                          >
+                            <X size={18} />
+                            Remove
+                          </button>
+                        )}
+                      </div>
                     </div>
+
+                    {backgroundImage && (
+                      <>
+                        <div>
+                          <label className="mb-2 block text-sm font-medium text-slate-300">
+                            Image Scale
+                          </label>
+                          <div className="flex items-center gap-4">
+                            <Slider.Root
+                              className="relative flex h-5 w-full touch-none select-none items-center"
+                              value={[imageScale]}
+                              onValueChange={([value]) => setImageScale(value)}
+                              min={50}
+                              max={200}
+                              step={1}
+                            >
+                              <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-700">
+                                <Slider.Range className="absolute h-full bg-gradient-to-r from-blue-400 to-teal-400" />
+                              </Slider.Track>
+                              <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
+                            </Slider.Root>
+                            <span className="w-12 text-right text-sm text-slate-400">
+                              {imageScale}%
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-300">
+                              Position X
+                            </label>
+                            <Slider.Root
+                              className="relative flex h-5 w-full touch-none select-none items-center"
+                              value={[imagePosition.x]}
+                              onValueChange={([value]) =>
+                                setImagePosition((prev) => ({
+                                  ...prev,
+                                  x: value,
+                                }))
+                              }
+                              max={100}
+                              step={1}
+                            >
+                              <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-700">
+                                <Slider.Range className="absolute h-full bg-gradient-to-r from-blue-400 to-teal-400" />
+                              </Slider.Track>
+                              <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
+                            </Slider.Root>
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-300">
+                              Position Y
+                            </label>
+                            <Slider.Root
+                              className="relative flex h-5 w-full touch-none select-none items-center"
+                              value={[imagePosition.y]}
+                              onValueChange={([value]) =>
+                                setImagePosition((prev) => ({
+                                  ...prev,
+                                  y: value,
+                                }))
+                              }
+                              max={100}
+                              step={1}
+                            >
+                              <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-700">
+                                <Slider.Range className="absolute h-full bg-gradient-to-r from-blue-400 to-teal-400" />
+                              </Slider.Track>
+                              <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
+                            </Slider.Root>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
