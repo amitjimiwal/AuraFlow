@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Poppins, Roboto } from "next/font/google";
 import "./globals.css";
+import { PostHogProvider } from "./providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({
@@ -55,7 +56,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${poppins.variable} ${roboto.variable}`}
       >
-        {children}
+        <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
   );

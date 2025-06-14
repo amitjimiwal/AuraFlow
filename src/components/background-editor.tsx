@@ -5,7 +5,7 @@ import { Download, Upload, X } from "lucide-react";
 import * as Slider from "@radix-ui/react-slider";
 import Link from "next/link";
 import Image from "next/image";
-
+import posthog from "posthog-js";
 interface BackgroundEditorProps {
   defaultText?: string;
 }
@@ -88,6 +88,9 @@ export function BackgroundEditor({
       const link = document.createElement("a");
       link.download = "background.png";
       link.href = canvas.toDataURL("image/png");
+      posthog.capture("image_downloaded_btn_clicked", {
+        property: "image_download",
+      });
       link.click();
     } catch (error) {
       console.error("Error generating image:", error);
