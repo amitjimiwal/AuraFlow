@@ -4,6 +4,7 @@ import html2canvas from "html2canvas";
 import { Download, Upload, X } from "lucide-react";
 import * as Slider from "@radix-ui/react-slider";
 import Link from "next/link";
+import Image from "next/image";
 
 interface BackgroundEditorProps {
   defaultText?: string;
@@ -98,9 +99,18 @@ export function BackgroundEditor({
       <div className="mx-auto max-w-6xl">
         <div className="mb-12 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
-              AuraFlow
-            </h1>
+            <div className="flex gap-2 items-center">
+              <Image
+                src="/favicon.ico"
+                alt="AuraFlow Logo"
+                width={40}
+                height={40}
+                className="rounded-full inline"
+              />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
+                AuraFlow
+              </h1>
+            </div>
             <p className="mt-2 text-slate-400">
               Create desktop images for your screen with your personalized
               masterpiece maxim

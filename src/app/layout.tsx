@@ -18,6 +18,31 @@ export const metadata: Metadata = {
   title: "AuraFlow",
   description:
     "Create desktop images for your screen with your personalized masterpiece maxim",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "AuraFlow",
+    description:
+      "Create desktop images for your screen with your personalized masterpiece maxim",
+    url: "https://auraflow.stackforgelabs.icu",
+    images: [
+      "https://res.cloudinary.com/dejzy9q65/image/upload/v1749903917/Screenshot_2025-06-14_at_5.30.20_PM_bwtqkk.png",
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AuraFlow",
+    site: "https://auraflow.stackforgelabs.icu",
+    description:
+      "Create desktop images for your screen with your personalized masterpiece maxim",
+    creator: "@notamitwts",
+    images: [
+      "https://res.cloudinary.com/dejzy9q65/image/upload/v1749903917/Screenshot_2025-06-14_at_5.30.20_PM_bwtqkk.png",
+    ],
+  },
+  keywords:
+    "aura, aura flow, aura flow app, aura flow desktop, aura flow wallpaper, aura flow background, aura flow image generator, personalized desktop images, custom wallpapers, create wallpapers, generate wallpapers, desktop customization, personalized backgrounds, custom desktop images, create desktop images",
 };
 
 export default function RootLayout({
