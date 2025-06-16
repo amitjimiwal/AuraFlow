@@ -121,7 +121,7 @@ export function BackgroundEditor({
           </div>
           <div className="flex items-center gap-4">
             <p>
-              <small className="text-xs text-slate-400">
+              {/* <small className="text-xs text-slate-400">
                 X &nbsp;
                 <Link
                   href="https://x.com/notamitwts"
@@ -130,7 +130,18 @@ export function BackgroundEditor({
                 >
                   @notamitwts
                 </Link>
-              </small>
+              </small> */}
+              <Link
+                href="https://www.producthunt.com/products/anoncodes?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-auraflow"
+                target="_blank"
+              >
+                <Image
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=978781&theme=light&t=1750041326703"
+                  alt="AuraFlow - Create&#0032;images&#0032;for&#0032;your&#0032;screen&#0032;with&#0032;personalized&#0032;maxim&#0032;quote | Product Hunt"
+                  width="200"
+                  height="54"
+                />
+              </Link>
             </p>
             <button
               onClick={handleDownload}
