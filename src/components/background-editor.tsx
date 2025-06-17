@@ -121,7 +121,7 @@ export function BackgroundEditor({
           </div>
           <div className="flex items-center gap-4">
             <p>
-              {/* <small className="text-xs text-slate-400">
+              <small className="text-xs text-slate-400">
                 X &nbsp;
                 <Link
                   href="https://x.com/notamitwts"
@@ -130,8 +130,8 @@ export function BackgroundEditor({
                 >
                   @notamitwts
                 </Link>
-              </small> */}
-              <Link
+              </small>
+              {/* <Link
                 href="https://www.producthunt.com/products/anoncodes?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-auraflow"
                 target="_blank"
               >
@@ -141,7 +141,7 @@ export function BackgroundEditor({
                   width="200"
                   height="54"
                 />
-              </Link>
+              </Link> */}
             </p>
             <button
               onClick={handleDownload}
