@@ -98,28 +98,28 @@ export function BackgroundEditor({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 sm:p-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-12 flex items-center justify-between">
+        <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex gap-2 items-center">
               <Image
                 src="/favicon.ico"
                 alt="AuraFlow Logo"
-                width={40}
-                height={40}
-                className="rounded-full inline"
+                width={32}
+                height={32}
+                className="rounded-full inline sm:w-10 sm:h-10"
               />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
                 AuraFlow
               </h1>
             </div>
-            <p className="mt-2 text-slate-400">
+            <p className="mt-2 text-sm sm:text-base text-slate-400">
               Create desktop images for your screen with your personalized
               masterpiece maxim
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <p>
               <small className="text-xs text-slate-400">
                 X &nbsp;
@@ -131,38 +131,27 @@ export function BackgroundEditor({
                   @notamitwts
                 </Link>
               </small>
-              {/* <Link
-                href="https://www.producthunt.com/products/anoncodes?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-auraflow"
-                target="_blank"
-              >
-                <Image
-                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=978781&theme=light&t=1750041326703"
-                  alt="AuraFlow - Create&#0032;images&#0032;for&#0032;your&#0032;screen&#0032;with&#0032;personalized&#0032;maxim&#0032;quote | Product Hunt"
-                  width="200"
-                  height="54"
-                />
-              </Link> */}
             </p>
             <button
               onClick={handleDownload}
-              className="group flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-teal-500 px-6 py-3 text-white shadow-lg transition-all hover:shadow-blue-500/25 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              className="group flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-teal-500 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base text-white shadow-lg transition-all hover:shadow-blue-500/25 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 w-full sm:w-auto justify-center"
             >
               <Download
-                size={20}
-                className="transition-transform group-hover:-translate-y-0.5"
+                size={18}
+                className="transition-transform group-hover:-translate-y-0.5 sm:w-5 sm:h-5"
               />
               Download
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-8">
+        <div className="grid grid-cols-1 gap-6 sm:gap-8">
           {/* Preview */}
-          <div className="overflow-hidden rounded-2xl bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm ring-1 ring-white/10">
+          <div className="overflow-hidden rounded-2xl bg-slate-800/50 p-4 sm:p-6 shadow-xl backdrop-blur-sm ring-1 ring-white/10">
             <div className="relative aspect-[16/9] overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10">
               <div
                 ref={backgroundRef}
-                className="flex h-full w-full items-center justify-center p-8 transition-all duration-300"
+                className="flex h-full w-full items-center justify-center p-4 sm:p-8 transition-all duration-300"
                 style={{
                   ...backgroundStyle,
                   position: "relative",
@@ -180,7 +169,7 @@ export function BackgroundEditor({
                 )}
                 <div className="relative">
                   <p
-                    className="text-center leading-relaxed text-4xl font-medium tracking-wide transition-all duration-300"
+                    className="text-center leading-relaxed text-lg sm:text-2xl md:text-4xl font-medium tracking-wide transition-all duration-300 px-2"
                     style={{
                       color: textColor,
                       opacity: textOpacity / 100,
@@ -197,13 +186,15 @@ export function BackgroundEditor({
           </div>
 
           {/* Controls */}
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-2">
             {/* Text Controls */}
-            <div className="space-y-6 rounded-2xl bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm ring-1 ring-white/10">
+            <div className="space-y-4 sm:space-y-6 rounded-2xl bg-slate-800/50 p-4 sm:p-6 shadow-xl backdrop-blur-sm ring-1 ring-white/10">
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-semibold text-white">Text</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-white">
+                  Text
+                </h2>
               </div>
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-300">
                     Text
@@ -212,7 +203,7 @@ export function BackgroundEditor({
                     type="text"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    className="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-white placeholder-slate-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                    className="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base text-white placeholder-slate-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your text..."
                   />
                 </div>
@@ -221,7 +212,7 @@ export function BackgroundEditor({
                   <label className="mb-2 block text-sm font-medium text-slate-300">
                     Text Color
                   </label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                     <input
                       type="color"
                       value={textColor}
@@ -232,7 +223,7 @@ export function BackgroundEditor({
                       type="text"
                       value={textColor}
                       onChange={(e) => setTextColor(e.target.value)}
-                      className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                      className="w-full sm:w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                     />
                   </div>
                 </div>
@@ -241,7 +232,7 @@ export function BackgroundEditor({
                   <label className="mb-2 block text-sm font-medium text-slate-300">
                     Text Opacity
                   </label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <Slider.Root
                       className="relative flex h-5 w-full touch-none select-none items-center"
                       value={[textOpacity]}
@@ -263,12 +254,14 @@ export function BackgroundEditor({
             </div>
 
             {/* Background Controls */}
-            <div className="space-y-6 rounded-2xl bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm ring-1 ring-white/10">
+            <div className="space-y-4 sm:space-y-6 rounded-2xl bg-slate-800/50 p-4 sm:p-6 shadow-xl backdrop-blur-sm ring-1 ring-white/10">
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-semibold text-white">Background</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-white">
+                  Background
+                </h2>
               </div>
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
@@ -322,8 +315,8 @@ export function BackgroundEditor({
                           <label className="mb-2 block text-sm font-medium text-slate-300">
                             Gradient Colors
                           </label>
-                          <div className="grid gap-4">
-                            <div className="flex items-center gap-4">
+                          <div className="grid gap-3 sm:gap-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                               <input
                                 type="color"
                                 value={customBackgroundGradient.from}
@@ -344,14 +337,14 @@ export function BackgroundEditor({
                                     from: e.target.value,
                                   }))
                                 }
-                                className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                className="w-full sm:w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                               />
                               <span className="text-sm text-slate-400">
                                 From
                               </span>
                             </div>
 
-                            <div className="flex items-center gap-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                               <input
                                 type="color"
                                 value={customBackgroundGradient.via}
@@ -372,14 +365,14 @@ export function BackgroundEditor({
                                     via: e.target.value,
                                   }))
                                 }
-                                className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                className="w-full sm:w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                               />
                               <span className="text-sm text-slate-400">
                                 Via
                               </span>
                             </div>
 
-                            <div className="flex items-center gap-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                               <input
                                 type="color"
                                 value={customBackgroundGradient.to}
@@ -400,7 +393,7 @@ export function BackgroundEditor({
                                     to: e.target.value,
                                   }))
                                 }
-                                className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                className="w-full sm:w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                               />
                               <span className="text-sm text-slate-400">To</span>
                             </div>
@@ -411,7 +404,7 @@ export function BackgroundEditor({
                           <label className="mb-2 block text-sm font-medium text-slate-300">
                             Gradient Angle
                           </label>
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3 sm:gap-4">
                             <Slider.Root
                               className="relative flex h-5 w-full touch-none select-none items-center"
                               value={[backgroundGradientAngle]}
@@ -437,7 +430,7 @@ export function BackgroundEditor({
                         <label className="mb-2 block text-sm font-medium text-slate-300">
                           Background Color
                         </label>
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                           <input
                             type="color"
                             value={backgroundColor}
@@ -448,19 +441,19 @@ export function BackgroundEditor({
                             type="text"
                             value={backgroundColor}
                             onChange={(e) => setBackgroundColor(e.target.value)}
-                            className="w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                            className="w-full sm:w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                           />
                         </div>
                       </div>
                     )}
                   </>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-slate-300">
                         Background Image
                       </label>
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                         <input
                           type="file"
                           ref={fileInputRef}
@@ -470,7 +463,7 @@ export function BackgroundEditor({
                         />
                         <button
                           onClick={() => fileInputRef.current?.click()}
-                          className="flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-slate-300 transition-colors hover:bg-slate-600 hover:text-white"
+                          className="flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-sm sm:text-base text-slate-300 transition-colors hover:bg-slate-600 hover:text-white w-full sm:w-auto justify-center"
                         >
                           <Upload size={18} />
                           Upload Image
@@ -478,7 +471,7 @@ export function BackgroundEditor({
                         {backgroundImage && (
                           <button
                             onClick={handleRemoveImage}
-                            className="flex items-center gap-2 rounded-lg bg-red-500/10 px-4 py-2 text-red-400 transition-colors hover:bg-red-500/20"
+                            className="flex items-center gap-2 rounded-lg bg-red-500/10 px-4 py-2 text-sm sm:text-base text-red-400 transition-colors hover:bg-red-500/20 w-full sm:w-auto justify-center"
                           >
                             <X size={18} />
                             Remove
@@ -493,7 +486,7 @@ export function BackgroundEditor({
                           <label className="mb-2 block text-sm font-medium text-slate-300">
                             Image Scale
                           </label>
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3 sm:gap-4">
                             <Slider.Root
                               className="relative flex h-5 w-full touch-none select-none items-center"
                               value={[imageScale]}
@@ -513,7 +506,7 @@ export function BackgroundEditor({
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="mb-2 block text-sm font-medium text-slate-300">
                               Position X
@@ -568,7 +561,7 @@ export function BackgroundEditor({
           </div>
         </div>
       </div>
-      <div className="mx-auto max-w-6xl mt-12 text-center">
+      <div className="mx-auto max-w-6xl mt-8 sm:mt-12 text-center px-4">
         <p>
           <small className="text-xs text-slate-400">
             Made with ❤️ by{" "}
@@ -581,7 +574,7 @@ export function BackgroundEditor({
             </Link>
           </small>
         </p>
-        <p className="mt-4 text-xs text-slate-500">
+        <p className="mt-2 sm:mt-4 text-xs text-slate-500">
           © {new Date().getFullYear()} AuraFlow. All rights reserved.
         </p>
       </div>
