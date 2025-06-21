@@ -40,6 +40,7 @@ export function BackgroundEditor({
     "gradient"
   );
   const [text, setText] = useState(defaultText);
+  const [showText, setShowText] = useState(true);
   const [textColor, setTextColor] = useState("#ffffff");
   const [textOpacity, setTextOpacity] = useState(100);
   const [backgroundColor, setBackgroundColor] = useState("#000000");
@@ -229,25 +230,33 @@ export function BackgroundEditor({
                     }}
                   />
                 )}
-                <motion.div
-                  drag
-                  dragConstraints={backgroundRef}
-                  dragMomentum={false}
-                  className="relative draggable-text cursor-grab active:cursor-grabbing"
-                >
-                  <p
-                    className="text-center leading-relaxed text-lg sm:text-2xl md:text-4xl font-medium tracking-wide transition-all duration-300 px-2"
-                    style={{
-                      color: textColor,
-                      opacity: textOpacity / 100,
-                      position: "relative",
-                      zIndex: 1,
-                      textShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    {text}
-                  </p>
-                </motion.div>
+                <AnimatePresence>
+                  {showText && (
+                    <motion.div
+                      drag
+                      dragConstraints={backgroundRef}
+                      dragMomentum={false}
+                      className="relative draggable-text cursor-grab active:cursor-grabbing"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <p
+                        className="text-center leading-relaxed text-lg sm:text-2xl md:text-4xl font-medium tracking-wide transition-all duration-300 px-2"
+                        style={{
+                          color: textColor,
+                          opacity: textOpacity / 100,
+                          position: "relative",
+                          zIndex: 1,
+                          textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        {text}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </motion.div>
@@ -259,68 +268,94 @@ export function BackgroundEditor({
           >
             {/* Text Controls */}
             <div className="space-y-4 sm:space-y-6 rounded-2xl bg-slate-800/50 p-4 sm:p-6 shadow-xl backdrop-blur-sm ring-1 ring-white/10">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg sm:text-xl font-semibold text-white">
                   Text
                 </h2>
-              </div>
-              <div className="space-y-4 sm:space-y-6">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-300">
-                    Text
-                  </label>
+                <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white transition-colors">
                   <input
-                    type="text"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    className="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base text-white placeholder-slate-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                    placeholder="Enter your text..."
+                    type="checkbox"
+                    checked={showText}
+                    onChange={(e) => setShowText(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-600 bg-slate-700/50 text-blue-400 focus:ring-blue-400 focus:ring-offset-0"
                   />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-300">
-                    Text Color
-                  </label>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                    <input
-                      type="color"
-                      value={textColor}
-                      onChange={(e) => setTextColor(e.target.value)}
-                      className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                    />
-                    <input
-                      type="text"
-                      value={textColor}
-                      onChange={(e) => setTextColor(e.target.value)}
-                      className="w-full sm:w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-300">
-                    Text Opacity
-                  </label>
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <Slider.Root
-                      className="relative flex h-5 w-full touch-none select-none items-center"
-                      value={[textOpacity]}
-                      onValueChange={([value]) => setTextOpacity(value)}
-                      max={100}
-                      step={1}
-                    >
-                      <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-700">
-                        <Slider.Range className="absolute h-full bg-gradient-to-r from-blue-400 to-teal-400" />
-                      </Slider.Track>
-                      <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
-                    </Slider.Root>
-                    <span className="w-12 text-right text-sm text-slate-400">
-                      {textOpacity}%
-                    </span>
-                  </div>
-                </div>
+                  <span className="text-sm font-medium">Show text</span>
+                </label>
               </div>
+              <AnimatePresence>
+                {showText && (
+                  <motion.div
+                    className="space-y-4 sm:space-y-6"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{
+                      opacity: 1,
+                      height: "auto",
+                      transition: { duration: 0.3 },
+                    }}
+                    exit={{
+                      opacity: 0,
+                      height: 0,
+                      transition: { duration: 0.2 },
+                    }}
+                  >
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-300">
+                        Text
+                      </label>
+                      <input
+                        type="text"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        className="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base text-white placeholder-slate-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        placeholder="Enter your text..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-300">
+                        Text Color
+                      </label>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                        <input
+                          type="color"
+                          value={textColor}
+                          onChange={(e) => setTextColor(e.target.value)}
+                          className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        />
+                        <input
+                          type="text"
+                          value={textColor}
+                          onChange={(e) => setTextColor(e.target.value)}
+                          className="w-full sm:w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-300">
+                        Text Opacity
+                      </label>
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <Slider.Root
+                          className="relative flex h-5 w-full touch-none select-none items-center"
+                          value={[textOpacity]}
+                          onValueChange={([value]) => setTextOpacity(value)}
+                          max={100}
+                          step={1}
+                        >
+                          <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-700">
+                            <Slider.Range className="absolute h-full bg-gradient-to-r from-blue-400 to-teal-400" />
+                          </Slider.Track>
+                          <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
+                        </Slider.Root>
+                        <span className="w-12 text-right text-sm text-slate-400">
+                          {textOpacity}%
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Background Controls */}
