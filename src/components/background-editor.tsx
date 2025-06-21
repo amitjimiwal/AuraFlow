@@ -43,6 +43,7 @@ export function BackgroundEditor({
   const [showText, setShowText] = useState(true);
   const [textColor, setTextColor] = useState("#ffffff");
   const [textOpacity, setTextOpacity] = useState(100);
+  const [textSize, setTextSize] = useState(48);
   const [backgroundColor, setBackgroundColor] = useState("#000000");
   const [backgroundGradientAngle, setBackgroundGradientAngle] = useState(337);
   const [customBackgroundGradient, setCustomBackgroundGradient] = useState({
@@ -243,10 +244,11 @@ export function BackgroundEditor({
                       transition={{ duration: 0.2 }}
                     >
                       <p
-                        className="text-center leading-relaxed text-lg sm:text-2xl md:text-4xl font-medium tracking-wide transition-all duration-300 px-2"
+                        className="text-center leading-relaxed font-medium tracking-wide transition-all duration-300 px-2"
                         style={{
                           color: textColor,
                           opacity: textOpacity / 100,
+                          fontSize: `${textSize}px`,
                           position: "relative",
                           zIndex: 1,
                           textShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -350,6 +352,30 @@ export function BackgroundEditor({
                         </Slider.Root>
                         <span className="w-12 text-right text-sm text-slate-400">
                           {textOpacity}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-300">
+                        Text Size
+                      </label>
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <Slider.Root
+                          className="relative flex h-5 w-full touch-none select-none items-center"
+                          value={[textSize]}
+                          onValueChange={([value]) => setTextSize(value)}
+                          min={12}
+                          max={100}
+                          step={1}
+                        >
+                          <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-700">
+                            <Slider.Range className="absolute h-full bg-gradient-to-r from-blue-400 to-teal-400" />
+                          </Slider.Track>
+                          <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
+                        </Slider.Root>
+                        <span className="w-16 text-right text-sm text-slate-400">
+                          {textSize}px
                         </span>
                       </div>
                     </div>
