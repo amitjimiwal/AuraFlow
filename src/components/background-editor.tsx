@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
-import { Download, Upload, X } from "lucide-react";
+import { Download, Upload, X, Plus, Trash } from "lucide-react";
 import * as Slider from "@radix-ui/react-slider";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,6 +9,16 @@ import posthog from "posthog-js";
 import { motion, AnimatePresence } from "framer-motion";
 interface BackgroundEditorProps {
   defaultText?: string;
+}
+
+interface TextElement {
+  id: string;
+  text: string;
+  color: string;
+  opacity: number;
+  size: number;
+  x: number;
+  y: number;
 }
 
 const containerVariants = {
@@ -39,11 +49,21 @@ export function BackgroundEditor({
   const [backgroundType, setBackgroundType] = useState<"gradient" | "image">(
     "gradient"
   );
-  const [text, setText] = useState(defaultText);
+  const [texts, setTexts] = useState<TextElement[]>([
+    {
+      id: `text-${Date.now()}`,
+      text: defaultText,
+      color: "#ffffff",
+      opacity: 100,
+      size: 30,
+      x: 0,
+      y: 0,
+    },
+  ]);
+  const [selectedTextId, setSelectedTextId] = useState<string | null>(
+    texts[0]?.id ?? null
+  );
   const [showText, setShowText] = useState(true);
-  const [textColor, setTextColor] = useState("#ffffff");
-  const [textOpacity, setTextOpacity] = useState(100);
-  const [textSize, setTextSize] = useState(48);
   const [backgroundColor, setBackgroundColor] = useState("#000000");
   const [backgroundGradientAngle, setBackgroundGradientAngle] = useState(337);
   const [customBackgroundGradient, setCustomBackgroundGradient] = useState({
@@ -82,6 +102,29 @@ export function BackgroundEditor({
     }
   };
 
+  const handleAddText = () => {
+    const newId = `text-${Date.now()}`;
+    setTexts([
+      ...texts,
+      {
+        id: newId,
+        text: "New Text",
+        color: "#ffffff",
+        opacity: 100,
+        size: 30,
+        x: 0,
+        y: 0,
+      },
+    ]);
+    setSelectedTextId(newId);
+  };
+
+  const handleRemoveText = () => {
+    if (!selectedTextId) return;
+    setTexts(texts.filter((t) => t.id !== selectedTextId));
+    setSelectedTextId(null);
+  };
+
   const backgroundStyle =
     backgroundType === "gradient"
       ? useBackgroundGradient
@@ -106,35 +149,33 @@ export function BackgroundEditor({
 
     try {
       // Temporarily remove transform from draggable element for accurate capture
-      const draggableElement = backgroundRef.current.querySelector(
+      const draggableElements = backgroundRef.current.querySelectorAll(
         ".draggable-text"
-      ) as HTMLElement;
-      const originalTransform = draggableElement
-        ? draggableElement.style.transform
-        : "";
-      if (draggableElement) {
-        draggableElement.style.transform = "none";
-      }
+      ) as NodeListOf<HTMLElement>;
+      const originalTransforms = Array.from(draggableElements).map(
+        (el) => el.style.transform
+      );
+      draggableElements.forEach((el) => (el.style.transform = "none"));
 
       const canvas = await html2canvas(backgroundRef.current, {
         scale: 2,
         backgroundColor: null,
         onclone: (document) => {
-          if (draggableElement) {
-            const clonedDraggable = document.querySelector(
-              ".draggable-text"
-            ) as HTMLElement;
-            if (clonedDraggable) {
-              clonedDraggable.style.transform = originalTransform;
-            }
+          const clonedDraggables = document.querySelectorAll(
+            ".draggable-text"
+          ) as NodeListOf<HTMLElement>;
+          if (clonedDraggables.length > 0) {
+            clonedDraggables.forEach((clonedEl, index) => {
+              clonedEl.style.transform = originalTransforms[index];
+            });
           }
         },
       });
 
       // Restore transform
-      if (draggableElement) {
-        draggableElement.style.transform = originalTransform;
-      }
+      draggableElements.forEach(
+        (el, index) => (el.style.transform = originalTransforms[index])
+      );
 
       const link = document.createElement("a");
       link.download = "background.png";
@@ -146,6 +187,15 @@ export function BackgroundEditor({
     } catch (error) {
       console.error("Error generating image:", error);
     }
+  };
+
+  const selectedText = texts.find((t) => t.id === selectedTextId);
+
+  const updateSelectedText = (props: Partial<TextElement>) => {
+    if (!selectedTextId) return;
+    setTexts(
+      texts.map((t) => (t.id === selectedTextId ? { ...t, ...props } : t))
+    );
   };
 
   return (
@@ -232,32 +282,63 @@ export function BackgroundEditor({
                   />
                 )}
                 <AnimatePresence>
-                  {showText && (
-                    <motion.div
-                      drag
-                      dragConstraints={backgroundRef}
-                      dragMomentum={false}
-                      className="relative draggable-text cursor-grab active:cursor-grabbing"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <p
-                        className="text-center leading-relaxed font-medium tracking-wide transition-all duration-300 px-2"
+                  {showText &&
+                    texts.map((textItem) => (
+                      <motion.div
+                        key={textItem.id}
+                        drag
+                        dragConstraints={backgroundRef}
+                        dragMomentum={false}
+                        className="draggable-text cursor-grab active:cursor-grabbing p-2"
+                        onTap={() => setSelectedTextId(textItem.id)}
+                        onDragEnd={(event, info) => {
+                          setTexts((prevTexts) =>
+                            prevTexts.map((t) =>
+                              t.id === textItem.id
+                                ? {
+                                    ...t,
+                                    x: t.x + info.offset.x,
+                                    y: t.y + info.offset.y,
+                                  }
+                                : t
+                            )
+                          );
+                        }}
+                        initial={{
+                          x: textItem.x,
+                          y: textItem.y,
+                          opacity: 0,
+                          scale: 0.9,
+                        }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
                         style={{
-                          color: textColor,
-                          opacity: textOpacity / 100,
-                          fontSize: `${textSize}px`,
-                          position: "relative",
-                          zIndex: 1,
-                          textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                          position: "absolute",
+                          x: textItem.x,
+                          y: textItem.y,
+                          outline:
+                            selectedTextId === textItem.id
+                              ? "2px solid #38bdf8"
+                              : "none",
+                          outlineOffset: "4px",
+                          borderRadius: "4px",
                         }}
                       >
-                        {text}
-                      </p>
-                    </motion.div>
-                  )}
+                        <p
+                          className="text-center leading-relaxed font-medium tracking-wide transition-all duration-300"
+                          style={{
+                            color: textItem.color,
+                            opacity: textItem.opacity / 100,
+                            fontSize: `${textItem.size}px`,
+                            zIndex: 1,
+                            textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                          }}
+                        >
+                          {textItem.text}
+                        </p>
+                      </motion.div>
+                    ))}
                 </AnimatePresence>
               </div>
             </div>
@@ -274,30 +355,55 @@ export function BackgroundEditor({
                 <h2 className="text-lg sm:text-xl font-semibold text-white">
                   Text
                 </h2>
-                <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={showText}
-                    onChange={(e) => setShowText(e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-600 bg-slate-700/50 text-blue-400 focus:ring-blue-400 focus:ring-offset-0"
-                  />
-                  <span className="text-sm font-medium">Show text</span>
-                </label>
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    onClick={handleAddText}
+                    className="flex items-center gap-1 rounded-md bg-slate-700 p-1.5 text-slate-300 transition-colors hover:bg-slate-600 hover:text-white"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    title="Add new text"
+                  >
+                    <Plus size={16} />
+                  </motion.button>
+                  {selectedTextId && (
+                    <motion.button
+                      onClick={handleRemoveText}
+                      className="flex items-center gap-1 rounded-md bg-red-500/10 p-1.5 text-red-400 transition-colors hover:bg-red-500/20"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      title="Remove selected text"
+                    >
+                      <Trash size={16} />
+                    </motion.button>
+                  )}
+                  <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={showText}
+                      onChange={(e) => setShowText(e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-600 bg-slate-700/50 text-blue-400 focus:ring-blue-400 focus:ring-offset-0"
+                    />
+                    <span className="text-sm font-medium">Show text</span>
+                  </label>
+                </div>
               </div>
               <AnimatePresence>
-                {showText && (
+                {showText && selectedText && (
                   <motion.div
                     className="space-y-4 sm:space-y-6"
-                    initial={{ opacity: 0, height: 0 }}
+                    key={selectedTextId}
+                    initial={{ opacity: 0, y: -10, height: 0 }}
                     animate={{
                       opacity: 1,
                       height: "auto",
-                      transition: { duration: 0.3 },
+                      y: 0,
+                      transition: { duration: 0.3, y: { delay: 0.1 } },
                     }}
                     exit={{
                       opacity: 0,
+                      y: -10,
                       height: 0,
-                      transition: { duration: 0.2 },
+                      transition: { duration: 0.2, y: { duration: 0.1 } },
                     }}
                   >
                     <div>
@@ -306,8 +412,10 @@ export function BackgroundEditor({
                       </label>
                       <input
                         type="text"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
+                        value={selectedText.text}
+                        onChange={(e) =>
+                          updateSelectedText({ text: e.target.value })
+                        }
                         className="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base text-white placeholder-slate-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                         placeholder="Enter your text..."
                       />
@@ -320,14 +428,18 @@ export function BackgroundEditor({
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                         <input
                           type="color"
-                          value={textColor}
-                          onChange={(e) => setTextColor(e.target.value)}
+                          value={selectedText.color}
+                          onChange={(e) =>
+                            updateSelectedText({ color: e.target.value })
+                          }
                           className="h-10 w-20 cursor-pointer rounded-lg border border-slate-600 bg-slate-700/50 p-1 transition-colors hover:border-blue-400 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                         />
                         <input
                           type="text"
-                          value={textColor}
-                          onChange={(e) => setTextColor(e.target.value)}
+                          value={selectedText.color}
+                          onChange={(e) =>
+                            updateSelectedText({ color: e.target.value })
+                          }
                           className="w-full sm:w-32 rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                         />
                       </div>
@@ -340,8 +452,10 @@ export function BackgroundEditor({
                       <div className="flex items-center gap-3 sm:gap-4">
                         <Slider.Root
                           className="relative flex h-5 w-full touch-none select-none items-center"
-                          value={[textOpacity]}
-                          onValueChange={([value]) => setTextOpacity(value)}
+                          value={[selectedText.opacity]}
+                          onValueChange={([value]) =>
+                            updateSelectedText({ opacity: value })
+                          }
                           max={100}
                           step={1}
                         >
@@ -351,7 +465,7 @@ export function BackgroundEditor({
                           <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
                         </Slider.Root>
                         <span className="w-12 text-right text-sm text-slate-400">
-                          {textOpacity}%
+                          {selectedText.opacity}%
                         </span>
                       </div>
                     </div>
@@ -363,8 +477,10 @@ export function BackgroundEditor({
                       <div className="flex items-center gap-3 sm:gap-4">
                         <Slider.Root
                           className="relative flex h-5 w-full touch-none select-none items-center"
-                          value={[textSize]}
-                          onValueChange={([value]) => setTextSize(value)}
+                          value={[selectedText.size]}
+                          onValueChange={([value]) =>
+                            updateSelectedText({ size: value })
+                          }
                           min={12}
                           max={100}
                           step={1}
@@ -375,7 +491,7 @@ export function BackgroundEditor({
                           <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-400 bg-white shadow-lg ring-offset-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-800 hover:bg-blue-50" />
                         </Slider.Root>
                         <span className="w-16 text-right text-sm text-slate-400">
-                          {textSize}px
+                          {selectedText.size}px
                         </span>
                       </div>
                     </div>
@@ -410,7 +526,11 @@ export function BackgroundEditor({
                       checked={backgroundType === "image"}
                       onChange={() => {
                         setBackgroundType("image");
-                        setText("competition is for losers");
+                        if (selectedTextId) {
+                          updateSelectedText({
+                            text: "competition is for losers",
+                          });
+                        }
                       }}
                       className="h-4 w-4 border-slate-600 bg-slate-700/50 text-blue-400 transition-colors focus:ring-blue-400"
                     />
