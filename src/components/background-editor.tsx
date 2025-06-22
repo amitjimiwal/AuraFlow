@@ -7,6 +7,35 @@ import Link from "next/link";
 import Image from "next/image";
 import posthog from "posthog-js";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Lobster,
+  Pacifico,
+  Caveat,
+  Bebas_Neue,
+  Anton,
+  Righteous,
+  VT323,
+} from "next/font/google";
+
+const lobster = Lobster({ subsets: ["latin"], weight: "400" });
+const pacifico = Pacifico({ subsets: ["latin"], weight: "400" });
+const caveat = Caveat({ subsets: ["latin"], weight: "400" });
+const bebasNeue = Bebas_Neue({ subsets: ["latin"], weight: "400" });
+const anton = Anton({ subsets: ["latin"], weight: "400" });
+const righteous = Righteous({ subsets: ["latin"], weight: "400" });
+const vt323 = VT323({ subsets: ["latin"], weight: "400" });
+
+const fontOptions = [
+  { name: "Default", className: "" },
+  { name: "Lobster", className: lobster.className },
+  { name: "Pacifico", className: pacifico.className },
+  { name: "Caveat", className: caveat.className },
+  { name: "Bebas Neue", className: bebasNeue.className },
+  { name: "Anton", className: anton.className },
+  { name: "Righteous", className: righteous.className },
+  { name: "VT323", className: vt323.className },
+];
+
 interface BackgroundEditorProps {
   defaultText?: string;
 }
@@ -19,6 +48,7 @@ interface TextElement {
   size: number;
   x: number;
   y: number;
+  fontClass: string;
 }
 
 const containerVariants = {
@@ -58,6 +88,7 @@ export function BackgroundEditor({
       size: 30,
       x: 0,
       y: 0,
+      fontClass: fontOptions[0].className,
     },
   ]);
   const [selectedTextId, setSelectedTextId] = useState<string | null>(
@@ -114,6 +145,7 @@ export function BackgroundEditor({
         size: 30,
         x: 0,
         y: 0,
+        fontClass: fontOptions[0].className,
       },
     ]);
     setSelectedTextId(newId);
@@ -326,7 +358,7 @@ export function BackgroundEditor({
                         }}
                       >
                         <p
-                          className="text-center leading-relaxed font-medium tracking-wide transition-all duration-300"
+                          className={`text-center leading-relaxed font-medium tracking-wide transition-all duration-300 ${textItem.fontClass}`}
                           style={{
                             color: textItem.color,
                             opacity: textItem.opacity / 100,
@@ -419,6 +451,25 @@ export function BackgroundEditor({
                         className="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base text-white placeholder-slate-400 transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
                         placeholder="Enter your text..."
                       />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-slate-300">
+                        Font
+                      </label>
+                      <select
+                        value={selectedText.fontClass}
+                        onChange={(e) =>
+                          updateSelectedText({ fontClass: e.target.value })
+                        }
+                        className="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                      >
+                        {fontOptions.map((font) => (
+                          <option key={font.name} value={font.className}>
+                            {font.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
