@@ -74,10 +74,10 @@ const itemVariants = {
 };
 
 export function BackgroundEditor({
-  defaultText = "everything is god's plan",
+  defaultText = "cheat on everything..",
 }: BackgroundEditorProps) {
   const [backgroundType, setBackgroundType] = useState<"gradient" | "image">(
-    "gradient"
+    "image"
   );
   const [texts, setTexts] = useState<TextElement[]>([
     {
@@ -88,7 +88,7 @@ export function BackgroundEditor({
       size: 30,
       x: 0,
       y: 0,
-      fontClass: fontOptions[0].className,
+      fontClass: fontOptions[1].className,
     },
   ]);
   const [selectedTextId, setSelectedTextId] = useState<string | null>(
@@ -108,7 +108,7 @@ export function BackgroundEditor({
     "./peter.png"
   );
   const [imagePosition, setImagePosition] = useState({ x: 75, y: 35 }); // percentage
-  const [imageScale, setImageScale] = useState(61); // percentage
+  const [imageScale, setImageScale] = useState(100); // percentage
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -579,7 +579,7 @@ export function BackgroundEditor({
                         setBackgroundType("image");
                         if (selectedTextId) {
                           updateSelectedText({
-                            text: "competition is for losers",
+                            text: "cheat on everything..",
                           });
                         }
                       }}
