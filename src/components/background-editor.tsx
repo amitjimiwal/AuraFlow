@@ -74,7 +74,7 @@ const itemVariants = {
 };
 
 export function BackgroundEditor({
-  defaultText = "cheat on everything..",
+  defaultText = "competition is for losers.",
 }: BackgroundEditorProps) {
   const [backgroundType, setBackgroundType] = useState<"gradient" | "image">(
     "image"
@@ -579,7 +579,7 @@ export function BackgroundEditor({
                         setBackgroundType("image");
                         if (selectedTextId) {
                           updateSelectedText({
-                            text: "cheat on everything..",
+                            text: "competition is for losers.",
                           });
                         }
                       }}
